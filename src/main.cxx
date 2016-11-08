@@ -9,6 +9,23 @@
 #include <algorithm>
 #include <cmath>
 
+// approach found on stackoverflow
+// http://stackoverflow.com/a/5056797/2472398
+template<typename A, typename B>
+std::pair<B,A> flip_pair(const std::pair<A,B> &p)
+{
+    return std::pair<B,A>(p.second, p.first);
+}
+
+template<typename A, typename B>
+std::multimap<B,A> flip_map(const std::map<A,B> &src)
+{
+    std::multimap<B,A> dst;
+    std::transform(src.begin(), src.end(), std::inserter(dst, dst.begin()), 
+                   flip_pair<A,B>);
+    return dst;
+}
+
 // are sets similar with respect to a given threshold?
 bool jaccard (const std::vector<int> r1, const std::vector<int> r2, double threshold) {
 	// taken from original implementation (verify.h), including optimizations
@@ -85,6 +102,7 @@ int main (int argc, char *argv[]) {
 	    	++token_frequency_map[word];
 	    }
 	    ++index;
+		}
 		// new map (key=frequency,value=token), ordered by key asc
     std::multimap<int, std::string> flip_token_frequency_map = flip_map(token_frequency_map);
 
@@ -92,10 +110,10 @@ int main (int argc, char *argv[]) {
     it_type begin = flip_token_frequency_map.begin();
     it_type end = flip_token_frequency_map.end();
 
-		for(it_type iterator = begin;iterator != end; ++iterator) {
-			std::cout << iterator->first << " x " << iterator->second << std::endl;
-		}
-
+		// for(it_type iterator = begin;iterator != end; ++iterator) {
+		// 	std::cout << iterator->first << " x " << iterator->second << std::endl;
+		// }
+		
 		// at this point, we have an asc ordered list of tokens, whereas the index is the unique 
 		// integer we use for further processing.
 		// e.g. 

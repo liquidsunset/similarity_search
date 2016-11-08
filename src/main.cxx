@@ -7,58 +7,62 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
-// approach found on stackoverflow
-// http://stackoverflow.com/a/5056797/2472398
-template<typename A, typename B>
-std::pair<B,A> flip_pair(const std::pair<A,B> &p)
-{
-    return std::pair<B,A>(p.second, p.first);
-}
+// are sets similar with respect to a given threshold?
+bool jaccard (const std::vector<int> r1, const std::vector<int> r2, double threshold) {
+	// taken from original implementation (verify.h), including optimizations
+	unsigned int posr1=0;
+	unsigned int posr2=0;
+	unsigned int foundoverlap=0;
+	unsigned int overlapthres = (unsigned int)(ceil((r1.size() + r2.size()) * threshold / (1 + threshold)));
 
-template<typename A, typename B>
-std::multimap<B,A> flip_map(const std::map<A,B> &src)
-{
-    std::multimap<B,A> dst;
-    std::transform(src.begin(), src.end(), std::inserter(dst, dst.begin()), 
-                   flip_pair<A,B>);
-    return dst;
-}
+	unsigned int maxr1 = r1.size() - posr1 + foundoverlap;
+	unsigned int maxr2 = r2.size() - posr2 + foundoverlap;
 
-// returns the Jaccard index of 2 given sets (i.e. lines)
-float jaccard (std::string line1, std::string line2) {	// = set1, set2
-	std::istringstream line1_stream(line1);
-	std::istringstream line2_stream(line2);
-  std::map<std::string, int> words;
-  int overlap = 0;
+	unsigned int steps = 0;
 
-	std::string word;	// = token
+	while(maxr1 >= overlapthres && maxr2 >= overlapthres && foundoverlap < overlapthres) {
+		steps++;
+		if(r1[posr1] == r2[posr2]) {
+			++posr1;
+			++posr2;
+			++foundoverlap;
+		} else if (r1[posr1] < r2[posr2]) {
+			++posr1;
+			--maxr1;
+		} else {
+			++posr2;
+			--maxr2;
+		}
+	}
+	
+	bool setsAreSimilar = foundoverlap >= overlapthres;
 
-	// insert all words of line1
-  while (line1_stream >> word) {
-  	++words[word];
-		if (words.count(word) == 0) {
-			++words[word];
-  	}  	
-  }
-  overlap += words.size();
-
-  // insert new words of line2 and increment overlap on existing words
-  while (line2_stream >> word) {
-		if (words.count(word) == 0) {
-			++words[word];
-  	} else {
-  		++overlap;
-  	}
-  }
-
-  float jaccard = (float)overlap/(float)words.size();
-
-  std::cout << "jaccard (overlap/union): " << jaccard << std::endl;
-  return jaccard;
+  std::cout << "threshold: " << threshold << " overlapthres: " << overlapthres 
+  	<< " foundoverlap: " << foundoverlap 
+  	<< "\tsets are similar: " << setsAreSimilar << std::endl;
+  return setsAreSimilar;
 }
 
 int main (int argc, char *argv[]) {
+
+ 	// START of testing Jaccard calculation
+	// two sample ordered vectors of ints
+	static const int tokensInts1[] = {1,2,4,5,6};
+	static const int tokensInts2[] = {1,4,5,6,7,8,9};
+	// overlap = 4
+	// union = 8
+	// jaccard = overlap/union = 0.5
+
+	std::vector<int> vec1 (tokensInts1, tokensInts1 + sizeof(tokensInts1) / sizeof(tokensInts1[0]) );
+	std::vector<int> vec2 (tokensInts2, tokensInts2 + sizeof(tokensInts2) / sizeof(tokensInts2[0]) );
+ 	
+ 	jaccard(vec1, vec2, 0.4);		// test jaccard calculation
+ 	jaccard(vec1, vec2, 0.5);		// test jaccard calculation
+ 	jaccard(vec1, vec2, 0.6);		// test jaccard calculation
+
+ 	// END of testing Jaccard calculation
 
 	if ( argc != 3 ) {
 		std::cout<<"usage: "<< argv[0] <<" <filename> <#lines(sets) to find common integers(tokens,words)>\n";
@@ -68,7 +72,6 @@ int main (int argc, char *argv[]) {
 		std::ifstream infile(argv[1]);
 		int number_lines = atoi(argv[2]);
 
-		std::string previous_line;	// = set, used for testing jaccard calculation
 		std::string line;	// = set
 		int index = 0;
 
@@ -82,12 +85,6 @@ int main (int argc, char *argv[]) {
 	    	++token_frequency_map[word];
 	    }
 	    ++index;
-
-	    if (!previous_line.empty())
-	   		jaccard(previous_line, line);		// test jaccard calculation
-	    previous_line = line;
-		}
-
 		// new map (key=frequency,value=token), ordered by key asc
     std::multimap<int, std::string> flip_token_frequency_map = flip_map(token_frequency_map);
 
@@ -111,6 +108,7 @@ int main (int argc, char *argv[]) {
 		// 498 -> 13 x for
 		// 499 -> 18 x of
 
+		// TODO: sort sets (lines) by token
 
 		return 0;
 	}

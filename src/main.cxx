@@ -5,6 +5,7 @@
 #include <vector>
 #include <cmath>
 #include <unordered_map>
+#include <algorithm>
 
 bool jaccard(const std::vector<int> r1, const std::vector<int> r2, double threshold);
 
@@ -90,13 +91,8 @@ int main(int argc, char *argv[]) {
     // set the token occurrence, high occurrence => low integer number
     for (it_type iterator = begin; iterator != end; ++iterator) {
         std::cout << iterator->first << " x " << iterator->second << std::endl;
-        if (tempCount != iterator->first) {
-            tempCount = iterator->first;
-            token_frequency_map[iterator->second] = occurrenceCount;
-            occurrenceCount++;
-        } else {
-            token_frequency_map[iterator->second] = occurrenceCount;
-        }
+        token_frequency_map[iterator->second] = occurrenceCount;
+        ++occurrenceCount;
     }
 
     //set occurrence count to -1 cause all the unrecognized tokens have negative numbers (-1, -2 ...)
@@ -134,12 +130,12 @@ void verify() {
 
 }
 
-unsigned int maxprefix(unsigned int len, double threshold) {
-    return std::min(len, len - minsize(len, threshold) + 1);
-}
-
 unsigned int minsize(unsigned int len, double threshold) {
     return (unsigned int)(ceil(threshold * len));
+}
+
+unsigned int maxprefix(unsigned int len, double threshold) {
+    return std::min(len, len - minsize(len, threshold) + 1);
 }
 
 // are sets similar with respect to a given threshold?

@@ -134,6 +134,14 @@ void verify() {
 
 }
 
+unsigned int maxprefix(unsigned int len, double threshold) {
+    return std::min(len, len - minsize(len, threshold) + 1);
+}
+
+unsigned int minsize(unsigned int len, double threshold) {
+    return (unsigned int)(ceil(threshold * len));
+}
+
 // are sets similar with respect to a given threshold?
 bool jaccard(const std::vector<int> r1, const std::vector<int> r2, double threshold) {
     // taken from original implementation (verify.h), including optimizations

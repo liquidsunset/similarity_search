@@ -55,8 +55,7 @@ int main(int argc, char *argv[]) {
 
     IndexedRecords indexedRecords;
     std::unordered_map<std::string, int> token_frequency_map;
-    std::ifstream infile(
-            "/Users/liquidsunset/Documents/Uni/Inf Master/AWM/Ähnlichkeitssuche in großen Datenbanken/PS/dblp_first500.txt");
+    std::ifstream infile(argv[1]);
     int number_lines = atoi(argv[2]);
 
     std::string line;    // = set

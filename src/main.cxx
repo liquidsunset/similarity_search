@@ -5,6 +5,7 @@
 #include <cmath>
 #include <unordered_map>
 #include "functions.h"
+#include "tokenizer.h"
 
 
 typedef std::vector<int16_t> int_vec_t;

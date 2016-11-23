@@ -2,12 +2,10 @@
 #include <fstream>
 #include <sstream>
 #include <map>
-#include <vector>
 #include <cmath>
 #include <unordered_map>
-#include <algorithm>
+#include "functions.h"
 
-bool jaccard(const std::vector<int> r1, const std::vector<int> r2, double threshold);
 
 typedef std::vector<int16_t> int_vec_t;
 typedef std::vector<unsigned int> CandidateIndices;
@@ -31,23 +29,7 @@ std::multimap<B, A> flip_map(const std::unordered_map<A, B> &src) {
 
 int main(int argc, char *argv[]) {
 
-
-    // START of testing Jaccard calculation
-    // two sample ordered vectors of ints
-    static const int tokensInts1[] = {1, 2, 4, 5, 6};
-    static const int tokensInts2[] = {1, 4, 5, 6, 7, 8, 9};
-    // overlap = 4
-    // union = 8
-    // jaccard = overlap/union = 0.5
-
-    std::vector<int> vec1(tokensInts1, tokensInts1 + sizeof(tokensInts1) / sizeof(tokensInts1[0]));
-    std::vector<int> vec2(tokensInts2, tokensInts2 + sizeof(tokensInts2) / sizeof(tokensInts2[0]));
-
-    jaccard(vec1, vec2, 0.4);        // test jaccard calculation
-    jaccard(vec1, vec2, 0.5);        // test jaccard calculation
-    jaccard(vec1, vec2, 0.6);        // test jaccard calculation
-
-    // END of testing Jaccard calculation
+    test_jaccard();
 
     if (argc != 3) {
         std::cout << "usage: " << argv[0] << " <filename> <#lines(sets) to find common integers(tokens,words)>\n";
@@ -83,14 +65,11 @@ int main(int argc, char *argv[]) {
     std::multimap<int, std::string> flip_token_frequency_map = flip_map(token_frequency_map);
 
     typedef std::map<int, std::string>::iterator it_type;
-    it_type begin = flip_token_frequency_map.begin();
-    it_type end = flip_token_frequency_map.end();
 
     int tempCount = -1;
     int occurrenceCount = 0;
     // set the token occurrence, high occurrence => low integer number
-    for (it_type iterator = begin; iterator != end; ++iterator) {
-        std::cout << iterator->first << " x " << iterator->second << std::endl;
+    for (auto iterator = flip_token_frequency_map.begin(); iterator != flip_token_frequency_map.end(); ++iterator) {
         token_frequency_map[iterator->second] = occurrenceCount;
         ++occurrenceCount;
     }
@@ -116,12 +95,13 @@ int main(int argc, char *argv[]) {
         }
 
         std::sort(tokens_per_line.begin(), tokens_per_line.end());
+
     }
 
     return 0;
 }
 
-void allPairs(std::vector<std::vector<int16_t>> sets_to_check, double threshold, IndexedRecords &indexedRecords) {
+void allPairs(int_vec_t token_set, double threshold, IndexedRecords &indexedRecords) {
 
 
 }
@@ -130,48 +110,28 @@ void verify() {
 
 }
 
-unsigned int minsize(unsigned int len, double threshold) {
-    return (unsigned int)(ceil(threshold * len));
+
+void test_jaccard() {
+    // START of testing Jaccard calculation
+    // two sample ordered vectors of ints
+    static const int tokensInts1[] = {1, 2, 4, 5, 6};
+    static const int tokensInts2[] = {1, 4, 5, 6, 7, 8, 9};
+    // overlap = 4
+    // union = 8
+    // jaccard = overlap/union = 0.5
+
+    std::vector<int> vec1(tokensInts1, tokensInts1 + sizeof(tokensInts1) / sizeof(tokensInts1[0]));
+    std::vector<int> vec2(tokensInts2, tokensInts2 + sizeof(tokensInts2) / sizeof(tokensInts2[0]));
+
+    jaccard(vec1, vec2, 0.4);        // test jaccard calculation
+    jaccard(vec1, vec2, 0.5);        // test jaccard calculation
+    jaccard(vec1, vec2, 0.6);        // test jaccard calculation
+
+    // END of testing Jaccard calculation
 }
 
-unsigned int maxprefix(unsigned int len, double threshold) {
-    return std::min(len, len - minsize(len, threshold) + 1);
-}
 
-// are sets similar with respect to a given threshold?
-bool jaccard(const std::vector<int> r1, const std::vector<int> r2, double threshold) {
-    // taken from original implementation (verify.h), including optimizations
-    unsigned int posr1 = 0;
-    unsigned int posr2 = 0;
-    unsigned int foundoverlap = 0;
-    unsigned int overlapthres = (unsigned int) (ceil((r1.size() + r2.size()) * threshold / (1 + threshold)));
 
-    unsigned int maxr1 = r1.size() - posr1 + foundoverlap;
-    unsigned int maxr2 = r2.size() - posr2 + foundoverlap;
 
-    unsigned int steps = 0;
-
-    while (maxr1 >= overlapthres && maxr2 >= overlapthres && foundoverlap < overlapthres) {
-        steps++;
-        if (r1[posr1] == r2[posr2]) {
-            ++posr1;
-            ++posr2;
-            ++foundoverlap;
-        } else if (r1[posr1] < r2[posr2]) {
-            ++posr1;
-            --maxr1;
-        } else {
-            ++posr2;
-            --maxr2;
-        }
-    }
-
-    bool setsAreSimilar = foundoverlap >= overlapthres;
-
-    std::cout << "threshold: " << threshold << " overlapthres: " << overlapthres
-              << " foundoverlap: " << foundoverlap
-              << "\tsets are similar: " << setsAreSimilar << std::endl;
-    return setsAreSimilar;
-}
 
 

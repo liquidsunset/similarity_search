@@ -42,7 +42,7 @@ inline bool jaccard(const std::vector<int> r1, const std::vector<int> r2, double
 }
 
 unsigned int minsize(unsigned int len, double threshold) {
-    return (unsigned int)(ceil(threshold * len));
+    return (unsigned int) (ceil(threshold * len));
 }
 
 inline unsigned int maxprefix(unsigned int len, double threshold) {

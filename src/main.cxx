@@ -28,16 +28,6 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void allPairs(int_vec_t token_set, double threshold) {
-
-
-}
-
-void verify() {
-
-}
-
-
 void test_jaccard() {
     // START of testing Jaccard calculation
     // two sample ordered vectors of ints

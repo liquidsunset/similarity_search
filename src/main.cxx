@@ -3,8 +3,6 @@
 #include "functions.h"
 #include "tokenizer.h"
 
-
-typedef std::vector<int16_t> int_vec_t;
 typedef std::vector<unsigned int> CandidateIndices;
 
 int main(int argc, char *argv[]) {
@@ -24,6 +22,26 @@ int main(int argc, char *argv[]) {
     //set filepointer back to start
     infile.clear();
     infile.seekg(0, std::ios::beg);
+
+    std::string line;
+    int occurrence_count = 0;
+
+    while (std::getline(infile, line)) {
+        std::istringstream line_stream(line);
+        std::string word;    // = token
+        std::vector<int> tokens_per_line;
+        while (line_stream >> word) {
+            if (frequency_map.find(word) == frequency_map.end()) {
+                frequency_map[word] = occurrence_count;
+                tokens_per_line.push_back(occurrence_count);
+                --occurrence_count;
+            } else {
+                tokens_per_line.push_back(frequency_map[word]);
+            }
+        }
+
+        std::sort(tokens_per_line.begin(), tokens_per_line.end());
+    }
 
     return 0;
 }

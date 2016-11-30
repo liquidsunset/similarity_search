@@ -18,7 +18,7 @@ struct eqstr {
     }
 };
 
-typedef google::dense_hash_map<std::string, unsigned int, std::tr1::hash<std::string>,
+typedef google::dense_hash_map<std::string, int, std::tr1::hash<std::string>,
         eqstr> token_frequency_map;
 
 

@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        std::sort(tokens_per_line.begin(), tokens_per_line.end());
+        std::sort(tokens_per_line.begin(), tokens_per_line.end(), std::greater<int>());
     }
 
     return 0;

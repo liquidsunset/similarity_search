@@ -40,7 +40,18 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        std::sort(tokens_per_line.begin(), tokens_per_line.end(), std::greater<int>());
+        std::sort(tokens_per_line.begin(), tokens_per_line.end(), std::less<int>());
+
+
+// debug: print line and ordered vector
+        std::cout << line << std::endl;
+        for (auto i = tokens_per_line.begin(); i != tokens_per_line.end(); ++i)
+            std::cout << *i << ' ';
+        std::cout << std::endl << std::endl;
+
+
+        //inverted list index, jaccard
+        // store current tokens_per_line in vector/deque for allpairs (used in jaccard comparison)
     }
 
     return 0;

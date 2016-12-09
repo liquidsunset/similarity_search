@@ -1,4 +1,7 @@
 # similarity_search
 
-### win command (git bash, cmake not working yet) 
-clear && rm -f main.exe && g++.exe main.cxx -o main.exe && ./main.exe ../dblp_first500.txt 50
+## make, then run:
+similarity_search <filename> <#lines(sets) to find common integers(tokens,words)> <jaccard-threshold(0..1)>
+
+## demo with threshold 0.9 (almost ident sets/lines)
+./similarity_search <filename> dblp_first500.txt 50 0.9

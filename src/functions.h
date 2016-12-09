@@ -35,9 +35,9 @@ inline bool jaccard(const std::vector<int> r1, const std::vector<int> r2, double
 
     bool setsAreSimilar = foundoverlap >= overlapthres;
 
-    std::cout << "threshold: " << threshold << " overlapthres: " << overlapthres
-              << " foundoverlap: " << foundoverlap
-              << "\tsets are similar: " << setsAreSimilar << std::endl;
+//    std::cout << "threshold: " << threshold << " overlapthres: " << overlapthres
+//              << " foundoverlap: " << foundoverlap
+//              << "\tsets are similar: " << setsAreSimilar << std::endl;
     return setsAreSimilar;
 }
 

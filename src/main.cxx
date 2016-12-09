@@ -6,26 +6,26 @@
 
 // will be filled during iteration,
 // processed in every allPairs call
-std::vector<std::vector<int>> set_vectors;
+std::vector<std::vector<int>> all_set_vectors;
 // e.g.
 // -23 -> 5,6   -35 -> 8,9
 // i.e. token with integer representation -32 appears in set/line 5 and 6 etc...
 std::map<int, std::vector<int>> I;
 typedef std::map<int, std::vector<int>>::iterator I_it;
 
-void allPairs(std::vector<int> vector, int i);
+void allPairs(std::vector<int> vector, int set_idx, double jaccard_threshold);
 
 int main(int argc, char *argv[]) {
 
-  test_jaccard();
-
-  if (argc != 3) {
-    std::cout << "usage: " << argv[0] << " <filename> <#lines(sets) to find common integers(tokens,words)>\n";
+  if (argc != 4) {
+    std::cout << "usage: " << argv[0]
+              << " <filename> <#lines(sets) to find common integers(tokens,words)> <jaccard-threshold(0..1)>\n";
     return -1;
   }
 
   std::ifstream infile(argv[1]);
   int number_lines = atoi(argv[2]);
+  double jaccard_threshold = atof(argv[3]);
 
   token_frequency_map frequency_map = get_token_frequency(infile, number_lines);
 
@@ -53,59 +53,36 @@ int main(int argc, char *argv[]) {
 
     std::sort(tokens_per_line.begin(), tokens_per_line.end(), std::less<int>());
 
-
-//        // debug: print line and ordered vector
-//        std::cout << line << std::endl;
-//        for (auto i = tokens_per_line.begin(); i != tokens_per_line.end(); ++i)
-//            std::cout << *i << ' ';
-//        std::cout << std::endl << std::endl;
-
-//        // debug: print line and ordered vector
-//        for (auto j = set_vectors.begin(); j != set_vectors.end();) {
-//            std::vector<int> vector = *j;
-//            for (auto i = vector.begin(); i != vector.end(); ++i)
-//                std::cout << *i << ' ';
-//            std::cout << std::endl << std::endl;
-//            j++;
-//        }
-//        std::cout << std::endl << std::endl;
-
-
-    // ALL PAIRS
-    //inverted list index, jaccard
-    allPairs(tokens_per_line, set_idx);
+    allPairs(tokens_per_line, set_idx, jaccard_threshold);
 
     // push current token vector to global vector
-    set_vectors.push_back(tokens_per_line);
+    all_set_vectors.push_back(tokens_per_line);
 
     set_idx++;
   }
   return 0;
 }
 
-void allPairs(std::vector<int> set_vector, int set_idx) {
-  std::vector<int> candidates;  //TODO: also store number of common tokens
+void allPairs(std::vector<int> set_vector, int set_idx, double jaccard_threshold) {
+  std::map<int, int> candidates;  //TODO: also store number of common tokens
 
   for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
     //check against existing sets in inverted list
     for (auto const &token_id : I) {
       if (token_id.first == *i) {
-        std::cout << "found in I: " << token_id.first << std::endl;
-        // add set indexes, where token occurs to candidate set
+//        std::cout << "found in I: " << token_id.first << std::endl;
+        // add set indexes, where token occurs in, to candidate set
         for (auto set = token_id.second.begin(); set != token_id.second.end(); ++set) {
-          candidates.push_back(*set);
+          if (candidates.find(*set) == candidates.end()) {
+            candidates[*set] = 1;
+          } else {
+            ++candidates[*set];
+          }
         }
         break;   //token only once in I
       }
     }
   }
-
-  // print candidates (set indexes, which have at least one common token)
-  std::cout << "Candidates (set indexes) for set_idx " << set_idx << ": ";
-  for (auto i = candidates.begin(); i != candidates.end(); ++i) {
-    std::cout << *i << ' ';
-  }
-  std::cout << std::endl << std::endl;
 
   //populate inverted list index
   for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
@@ -123,7 +100,18 @@ void allPairs(std::vector<int> set_vector, int set_idx) {
     }
   }
 
-  // TODO: now verify candidates = run jaccard
+  // now verify candidates = run jaccard
+  std::cout << "set " << set_idx << " similar to sets: ";
+
+  for (auto const &candidate : candidates) {
+    // TODO: use number of common tokens = candidate.second
+
+    bool similar = jaccard(set_vector, all_set_vectors.at(candidate.first),
+                           jaccard_threshold); //TODO: get threshold from param
+    if (similar)
+      std::cout << candidate.first << " ";
+  }
+  std::cout << std::endl;
 }
 
 void test_jaccard() {

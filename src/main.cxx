@@ -114,27 +114,5 @@ void allPairs(std::vector<int> set_vector, int set_idx, double jaccard_threshold
   std::cout << std::endl;
 }
 
-void test_jaccard() {
-  // START of testing Jaccard calculation
-  // two sample ordered vectors of ints
-  static const int tokensInts1[] = {1, 2, 4, 5, 6};
-  static const int tokensInts2[] = {1, 4, 5, 6, 7, 8, 9};
-  // overlap = 4
-  // union = 8
-  // jaccard = overlap/union = 0.5
-
-  std::vector<int> vec1(tokensInts1, tokensInts1 + sizeof(tokensInts1) / sizeof(tokensInts1[0]));
-  std::vector<int> vec2(tokensInts2, tokensInts2 + sizeof(tokensInts2) / sizeof(tokensInts2[0]));
-
-  jaccard(vec1, vec2, 0.4);        // test jaccard calculation
-  jaccard(vec1, vec2, 0.5);        // test jaccard calculation
-  jaccard(vec1, vec2, 0.6);        // test jaccard calculation
-
-  // END of testing Jaccard calculation
-}
-
-
-
-
 
 

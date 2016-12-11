@@ -1,9 +1,7 @@
-#ifndef FUNCTIONS_H
-#define FUNCTIONS_H
+#ifndef JACCARD_H
+#define JACCARD_H
 
 #include <vector>
-
-void test_jaccard();
 
 // are sets similar with respect to a given threshold?
 inline bool jaccard(const std::vector<int> r1, const std::vector<int> r2, double threshold) {
@@ -41,7 +39,7 @@ inline bool jaccard(const std::vector<int> r1, const std::vector<int> r2, double
     return setsAreSimilar;
 }
 
-unsigned int minsize(unsigned int len, double threshold) {
+inline unsigned int minsize(unsigned int len, double threshold) {
     return (unsigned int) (ceil(threshold * len));
 }
 
@@ -49,4 +47,4 @@ inline unsigned int maxprefix(unsigned int len, double threshold) {
     return std::min(len, len - minsize(len, threshold) + 1);
 }
 
-#endif //FUNCTIONS_H
+#endif //JACCARD_H

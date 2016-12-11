@@ -1,16 +1,11 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
-#include "functions.h"
+#include "jaccard.h"
 #include "tokenizer.h"
 
-// will be filled during iteration,
-// processed in every allPairs call
 std::vector<std::vector<int>> all_set_vectors;
-// e.g.
-// -23 -> 5,6   -35 -> 8,9
-// i.e. token with integer representation -32 appears in set/line 5 and 6 etc...
-std::map<int, std::vector<int>> I;
+std::map<int, std::vector<int>> I; // e.g. -23 -> 5,6   -35 -> 8,9 i.e. token with integer representation -32 appears in set/line 5 and 6 etc...
 typedef std::map<int, std::vector<int>>::iterator I_it;
 
 void allPairs(std::vector<int> vector, int set_idx, double jaccard_threshold);
@@ -79,12 +74,12 @@ void allPairs(std::vector<int> set_vector, int set_idx, double jaccard_threshold
             ++candidates[*set];
           }
         }
-        break;   //token only once in I
+        break;   //token unique in I
       }
     }
   }
 
-  //populate inverted list index
+  //populate inverted list index I
   for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
     int token = *i;
 
@@ -107,7 +102,7 @@ void allPairs(std::vector<int> set_vector, int set_idx, double jaccard_threshold
     // TODO: use number of common tokens = candidate.second
 
     bool similar = jaccard(set_vector, all_set_vectors.at(candidate.first),
-                           jaccard_threshold); //TODO: get threshold from param
+                           jaccard_threshold);
     if (similar)
       std::cout << candidate.first << " ";
   }

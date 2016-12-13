@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    std::ifstream infile("/home/liquid/similarity_search/dblp_first500.txt");
+    std::ifstream infile(argv[1]);
     int number_lines = atoi(argv[2]);
     double jaccard_threshold = atof(argv[3]);
 
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
             */
         }
 
-        std::sort(tokens_per_line.begin(), tokens_per_line.end(), std::less<int>());
+        std::sort(tokens_per_line.begin(), tokens_per_line.end());
 
         allPairs(tokens_per_line, set_idx, jaccard_threshold);
 

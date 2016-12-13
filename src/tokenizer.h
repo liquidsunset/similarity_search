@@ -46,7 +46,7 @@ token_frequency_map inline get_token_frequency(std::ifstream &file, int number_l
 
             std::pair<it, bool> entry = frequency_map.insert(std::make_pair(word, 1));
 
-            if(!entry.second) {
+            if (!entry.second) {
                 entry.first->second += 1;
             }
 

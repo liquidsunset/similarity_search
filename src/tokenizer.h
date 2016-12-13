@@ -20,7 +20,7 @@ struct eqstr {
 
 typedef google::dense_hash_map<std::string, int, std::tr1::hash<std::string>,
         eqstr> token_frequency_map;
-
+typedef token_frequency_map::iterator it;
 
 struct token {
     std::string token_name;
@@ -43,12 +43,19 @@ token_frequency_map inline get_token_frequency(std::ifstream &file, int number_l
 
         std::string word;    // = token
         while (line_stream >> word) {
-            token_frequency_map::iterator it = frequency_map.find(word);
+
+            std::pair<it, bool> entry = frequency_map.insert(std::make_pair(word, 1));
+
+            if(!entry.second) {
+                entry.first->second += 1;
+            }
+
+            /*token_frequency_map::iterator it = frequency_map.find(word);
             if (it != frequency_map.end()) {
                 it->second += 1;
             } else {
                 frequency_map[word] = 1;
-            }
+            }*/
         }
         ++index;
     }

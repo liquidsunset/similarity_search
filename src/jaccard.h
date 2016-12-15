@@ -4,7 +4,7 @@
 #include <vector>
 
 // are sets similar with respect to a given threshold?
-inline bool jaccard(const std::vector<int> r1, const std::vector<int> r2, double threshold, unsigned int posr1 = 0,
+inline bool jaccard(const std::vector<int> &r1, const std::vector<int> &r2, double threshold, unsigned int posr1 = 0,
                     unsigned int posr2 = 0, unsigned int foundoverlap = 0) {
     // taken from original implementation (verify.h), including optimizations
     unsigned int overlapthres = (unsigned int) (ceil((r1.size() + r2.size()) * threshold / (1 + threshold)));

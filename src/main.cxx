@@ -4,7 +4,7 @@
 #include "allpairs.h"
 #include "tokenizer.h"
 
-std::vector<std::vector<int>> all_set_vectors;
+std::vector<set> all_sets;
 std::map<int, std::vector<int>> I; // e.g. -23 -> 5,6   -35 -> 8,9 i.e. token with integer representation -32 appears in set/line 5 and 6 etc...
 
 int main(int argc, char *argv[]) {
@@ -56,12 +56,15 @@ int main(int argc, char *argv[]) {
 
         std::sort(tokens_per_line.begin(), tokens_per_line.end());
 
-      allPairs(tokens_per_line, set_idx, jaccard_threshold, I, all_set_vectors);
+      allPairs(tokens_per_line, set_idx, jaccard_threshold, I, all_sets);
 
-        // push current token vector to global vector
-        all_set_vectors.push_back(tokens_per_line);
+      // push current set to glocal set vector
+      set set;
+      set.tokens = tokens_per_line;
+      set.candidate_count = 0;
+      all_sets.push_back(set);
 
-        set_idx++;
+      set_idx++;
     }
     return 0;
 }

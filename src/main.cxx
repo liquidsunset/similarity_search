@@ -4,7 +4,7 @@
 #include "allpairs.h"
 #include "tokenizer.h"
 
-std::vector<set> all_sets;  //TODO: rename struct
+std::vector<record> all_sets;
 std::map<int, std::vector<int>> I; // e.g. -23 -> 5,6   -35 -> 8,9 i.e. token with integer representation -32 appears in set/line 5 and 6 etc...
 
 int main(int argc, char *argv[]) {
@@ -32,7 +32,10 @@ int main(int argc, char *argv[]) {
     while (std::getline(infile, line)) {
         std::istringstream line_stream(line);
         std::string word;    // = token
-        std::vector<int> tokens_per_line;
+
+        record curr_record;
+        std::vector<int> &tokens_per_line = curr_record.tokens;
+
         while (line_stream >> word) {
 
             std::pair<it, bool> entry = frequency_map.insert(std::make_pair(word, occurrence_count));
@@ -43,28 +46,16 @@ int main(int argc, char *argv[]) {
             } else {
                 tokens_per_line.push_back(entry.first->second);
             }
-            /*
-            if (frequency_map.find(word) == frequency_map.end()) {
-                frequency_map[word] = occurrence_count;
-                tokens_per_line.push_back(occurrence_count);
-                --occurrence_count;
-            } else {
-                tokens_per_line.push_back(frequency_map[word]);
-            }
-            */
         }
 
         std::sort(tokens_per_line.begin(), tokens_per_line.end());
 
-      allPairs(tokens_per_line, set_idx, jaccard_threshold, I, all_sets);
+        allPairs(tokens_per_line, set_idx, jaccard_threshold, I, all_sets);
 
-      // push current set to glocal set vector
-      set set;  //TODO: do not copy vector
-      set.tokens = tokens_per_line;
-      set.candidate_count = 0;
-      all_sets.push_back(set);
+        // push current set to glocal set vector
+        all_sets.push_back(curr_record);
 
-      set_idx++;
+        set_idx++;
     }
     return 0;
 }

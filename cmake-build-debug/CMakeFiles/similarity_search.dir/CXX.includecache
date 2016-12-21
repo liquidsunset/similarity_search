@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/liquid/similarity_search/src/jaccard.h
+vector
+-
+
+/home/liquid/similarity_search/src/main.cxx
+iostream
+-
+algorithm
+-
+map
+-
+jaccard.h
+/home/liquid/similarity_search/src/jaccard.h
+tokenizer.h
+/home/liquid/similarity_search/src/tokenizer.h
+
+/home/liquid/similarity_search/src/tokenizer.h
+cstring
+-
+iostream
+-
+fstream
+-
+sstream
+-
+vector
+-
+sparsehash/dense_hash_map
+-
+

@@ -5,13 +5,15 @@
 
 typedef std::map<int, std::vector<int>>::iterator I_it;
 
-struct set {
+struct record {
     unsigned int candidate_count;
     std::vector<int> tokens;
+
+
 };
 
 void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshold, std::map<int, std::vector<int>> &I,
-              std::vector<set> &all_sets) {
+              std::vector<record> &all_sets) {
 
   std::vector<int> candidate_indexes;
 

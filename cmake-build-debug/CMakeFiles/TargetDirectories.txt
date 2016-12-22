@@ -1,3 +1,0 @@
-/home/liquid/similarity_search/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/liquid/similarity_search/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/liquid/similarity_search/cmake-build-debug/CMakeFiles/similarity_search.dir

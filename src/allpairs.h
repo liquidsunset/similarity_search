@@ -3,13 +3,11 @@
 
 #include "jaccard.h"
 
-typedef std::map<int, std::vector<int>>::iterator I_it;
+typedef std::map<int, std::vector<int>>::iterator I_it; //TODO : use dense hash map here
 
 struct record {
-    unsigned int candidate_count;
+    unsigned int candidate_count = 0;
     std::vector<int> tokens;
-
-
 };
 
 void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshold, std::map<int, std::vector<int>> &I,

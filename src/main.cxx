@@ -5,7 +5,7 @@
 #include "tokenizer.h"
 
 std::vector<record> all_sets;
-std::map<int, std::vector<int>> I; // e.g. -23 -> 5,6   -35 -> 8,9 i.e. token with integer representation -32 appears in set/line 5 and 6 etc...
+inverted_list I; // TODO: dense hash map here
 
 int main(int argc, char *argv[]) {
 

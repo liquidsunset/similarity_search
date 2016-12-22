@@ -20,6 +20,7 @@ struct eqstr {
 
 typedef google::dense_hash_map<std::string, int, std::tr1::hash<std::string>,
         eqstr> token_frequency_map;
+typedef google::dense_hash_map<unsigned int, std::vector<int>> inverted_list;
 typedef token_frequency_map::iterator it;
 
 struct token {

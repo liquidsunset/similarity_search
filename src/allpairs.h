@@ -15,7 +15,7 @@ struct record {
     std::vector<int> tokens;
 };
 
-void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshold, inverted_list &I,
+void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshold, inverted_list &inv_list,
               std::vector<record> &all_sets) {
 
     std::vector<int> candidate_indexes;
@@ -23,18 +23,17 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
     for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
 
 
-        //check against existing sets in inverted list
-        for (auto const &token_id : I) {  // TODO: change to find call, TODO: dense hash map, TODO: maxprefix berechnen
-            if (token_id.first == *i) {
+        list_iterator token_id = inv_list.find(*i);
+
+        //TODO: maxprefix berechnen
+        if (token_id != inv_list.end()) {
 //        std::cout << "found in I: " << token_id.first << std::endl;
-                // add set indexes, where token occurs in, to candidate set
-                for (auto set = token_id.second.begin(); set != token_id.second.end(); ++set) {
-                    record &curr_set = all_sets.at(*set);
-                    if (curr_set.candidate_count == 0) // first check if 0, increment afterwards
-                        candidate_indexes.push_back(*set);
-                    curr_set.candidate_count++;
-                }
-                break;   //token unique in I
+            // add set indexes, where token occurs in, to candidate set
+            for (auto set = token_id->second.begin(); set != token_id->second.end(); ++set) {
+                record &curr_set = all_sets.at(*set);
+                if (curr_set.candidate_count == 0) // first check if 0, increment afterwards
+                    candidate_indexes.push_back(*set);
+                curr_set.candidate_count++;
             }
         }
     }
@@ -44,7 +43,7 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
         int token = *i;
 
         std::vector<int> inverted_list_vector;
-        std::pair<list_iterator, bool> entry = I.insert(std::make_pair(token, inverted_list_vector));
+        std::pair<list_iterator, bool> entry = inv_list.insert(std::make_pair(token, inverted_list_vector));
 
         entry.first->second.push_back(set_idx);
     }

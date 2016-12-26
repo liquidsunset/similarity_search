@@ -5,7 +5,7 @@
 #include "tokenizer.h"
 
 std::vector<record> all_sets;
-inverted_list I; // TODO: dense hash map here
+inverted_list inv_list;
 
 int main(int argc, char *argv[]) {
 
@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
     int number_lines = atoi(argv[2]);
     double jaccard_threshold = atof(argv[3]);
 
+    inv_list.set_empty_key(std::numeric_limits<int>::max());
     token_frequency_map frequency_map = get_token_frequency(infile, number_lines);
 
     //set filepointer back to start
@@ -50,7 +51,7 @@ int main(int argc, char *argv[]) {
 
         std::sort(tokens_per_line.begin(), tokens_per_line.end());
 
-        allPairs(tokens_per_line, set_idx, jaccard_threshold, I, all_sets);
+        allPairs(tokens_per_line, set_idx, jaccard_threshold, inv_list, all_sets);
 
         // push current set to glocal set vector
         all_sets.push_back(curr_record);

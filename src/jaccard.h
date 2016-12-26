@@ -37,12 +37,4 @@ inline bool jaccard(const std::vector<int> &r1, const std::vector<int> &r2, doub
     return setsAreSimilar;
 }
 
-inline unsigned int minsize(unsigned int len, double threshold) {
-    return (unsigned int) (ceil(threshold * len));
-}
-
-inline unsigned int maxprefix(unsigned int len, double threshold) {
-    return std::min(len, len - minsize(len, threshold) + 1);
-}
-
 #endif //JACCARD_H

@@ -5,8 +5,10 @@
 #include "jaccard.h"
 
 
-typedef google::dense_hash_map<unsigned int, std::vector<int>> inverted_list;
-typedef inverted_list::iterator it;
+typedef google::dense_hash_map<int, std::vector<int>> inverted_list;
+typedef inverted_list::iterator list_iterator;
+
+unsigned int maxprefix(unsigned int len, double threshold);
 
 struct record {
     unsigned int candidate_count = 0;
@@ -19,6 +21,8 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
     std::vector<int> candidate_indexes;
 
     for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
+
+
         //check against existing sets in inverted list
         for (auto const &token_id : I) {  // TODO: change to find call, TODO: dense hash map, TODO: maxprefix berechnen
             if (token_id.first == *i) {
@@ -40,23 +44,9 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
         int token = *i;
 
         std::vector<int> inverted_list_vector;
-        std::pair<it, bool> entry = I.insert(std::make_pair(token, inverted_list_vector));
+        std::pair<list_iterator, bool> entry = I.insert(std::make_pair(token, inverted_list_vector));
 
         entry.first->second.push_back(set_idx);
-
-        //TODO: REfactor with google maps
-        /*
-        I_it it = I.find(token);
-        if (it != I.end()) {
-          // token exists in I, push set_idx to list
-          it->second.push_back(set_idx);
-        } else {
-          // token does not exist yet, add to I with current set_idx
-          std::vector<int> vector;
-          vector.push_back(set_idx);
-          I.insert(std::pair<int, std::vector<int>>(token, vector));
-        }*/
-
     }
 
     // VERIFY candidates = run jaccard
@@ -65,23 +55,29 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
     for (auto const &candidate_index : candidate_indexes) {
         // TODO: use number of common tokens = candidate.second
         record &candidate = all_sets.at(candidate_index);
-        unsigned int lastposprobe = maxprefix - 1;
 
+        /*
+        unsigned int maxpref = maxprefix(candidate.tokens.size(), jaccard_threshold);
+        unsigned int lastposprobe = maxpref - 1;
+
+        unsigned int lastposind = 0;
         unsigned int recpreftoklast = set_vector[lastposprobe - 1];
-        unsigned int indrecpreftoklast = indexrecord.tokens[lastposind - 1];
+        unsigned int indrecpreftoklast = candidate.tokens[lastposind - 1];
+
+        unsigned int recpos, indrecpos;
 
         if (recpreftoklast > indrecpreftoklast) {  //TODO
 
-            recpos = candidateData.count;
+            recpos = candidate.candidate_count;
             //first position after minprefix / lastposind
             indrecpos = lastposind;
         } else {
             // First position after maxprefix / lastposprobe
             recpos = lastposprobe;
-            indrecpos = candidateData.count;
-        }
+            indrecpos = candidate.candidate_count;
+        }*/
 
-        bool similar = jaccard(set_vector, candidate, jaccard_threshold);
+        bool similar = jaccard(set_vector, candidate.tokens, jaccard_threshold);
         if (similar)
             std::cout << candidate_index << " ";
 
@@ -89,6 +85,14 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
         candidate.candidate_count = 0;
     }
     std::cout << std::endl;
+}
+
+unsigned int minsize(unsigned int len, double threshold) {
+    return (unsigned int) (ceil(threshold * len));
+}
+
+unsigned int maxprefix(unsigned int len, double threshold) {
+    return std::min(len, len - minsize(len, threshold) + 1);
 }
 
 #endif //ALLPAIRS_H

@@ -49,13 +49,6 @@ token_frequency_map inline get_token_frequency(std::ifstream &file, int number_l
             if (!entry.second) {
                 entry.first->second += 1;
             }
-
-            /*token_frequency_map::iterator it = frequency_map.find(word);
-            if (it != frequency_map.end()) {
-                it->second += 1;
-            } else {
-                frequency_map[word] = 1;
-            }*/
         }
         ++index;
     }

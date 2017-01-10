@@ -8,7 +8,7 @@
 typedef google::dense_hash_map<int, std::vector<int>> inverted_list;
 typedef inverted_list::iterator list_iterator;
 
-unsigned int maxprefix(unsigned int len, double threshold);
+inline static unsigned int maxprefix(unsigned int len, double threshold);
 
 struct record {
     unsigned int candidate_count = 0;
@@ -20,8 +20,9 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
 
     std::vector<int> candidate_indexes;
 
-    for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
+    unsigned int maxpref = maxprefix(set_vector.size(), jaccard_threshold);
 
+    for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
 
         list_iterator token_id = inv_list.find(*i);
 
@@ -55,18 +56,15 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
         // TODO: use number of common tokens = candidate.second
         record &candidate = all_sets.at(candidate_index);
 
-        /*
-        unsigned int maxpref = maxprefix(candidate.tokens.size(), jaccard_threshold);
-        unsigned int lastposprobe = maxpref - 1;
+        unsigned int lastposprobe = maxpref;
 
-        unsigned int lastposind = 0;
+        unsigned int lastposind = maxpref;
         unsigned int recpreftoklast = set_vector[lastposprobe - 1];
         unsigned int indrecpreftoklast = candidate.tokens[lastposind - 1];
 
         unsigned int recpos, indrecpos;
 
-        if (recpreftoklast > indrecpreftoklast) {  //TODO
-
+        if (recpreftoklast > indrecpreftoklast) {
             recpos = candidate.candidate_count;
             //first position after minprefix / lastposind
             indrecpos = lastposind;
@@ -74,23 +72,25 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
             // First position after maxprefix / lastposprobe
             recpos = lastposprobe;
             indrecpos = candidate.candidate_count;
-        }*/
+        }
 
-        bool similar = jaccard(set_vector, candidate.tokens, jaccard_threshold);
-        if (similar)
+        bool similar = jaccard(set_vector, candidate.tokens, jaccard_threshold, recpos,
+                               indrecpos, candidate.candidate_count);
+
+        if (similar) {
             std::cout << candidate_index << " ";
+        }
 
-        //reset candidate_count, correct? TODO
         candidate.candidate_count = 0;
     }
     std::cout << std::endl;
 }
 
-unsigned int minsize(unsigned int len, double threshold) {
+inline static unsigned int minsize(unsigned int len, double threshold) {
     return (unsigned int) (ceil(threshold * len));
 }
 
-unsigned int maxprefix(unsigned int len, double threshold) {
+inline static unsigned int maxprefix(unsigned int len, double threshold) {
     return std::min(len, len - minsize(len, threshold) + 1);
 }
 

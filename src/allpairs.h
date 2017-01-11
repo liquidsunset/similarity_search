@@ -35,9 +35,9 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
             for (auto set = token_id->second.begin(); set != token_id->second.end(); ++set) {
                 record &curr_set = all_sets.at(*set);
                 unsigned int indreclen = curr_set.tokens.size();
-                if(indreclen < maxpref) {
+                /*if(indreclen < maxpref) {
                     break;
-                }
+                }*/
                 if (curr_set.candidate_count == 0) // first check if 0, increment afterwards
                     candidate_indexes.push_back(*set);
                 curr_set.candidate_count++;
@@ -104,6 +104,7 @@ inline static unsigned int maxprefix(unsigned int len, double threshold) {
 
 inline static unsigned int minoverlap(unsigned int len1, unsigned int len2, double threshold) {
     return std::min(len2, std::min(len1, (unsigned int) (ceil((len1 + len2) * threshold / (1 + threshold)))));
+    //return (unsigned int)(ceil((len1 + len2) * threshold / (1 + threshold)));
 }
 
 #endif //ALLPAIRS_H

@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
         std::sort(tokens_per_line.begin(), tokens_per_line.end());
 
-        allPairs(tokens_per_line, set_idx, jaccard_threshold, inv_list, all_sets);
+        allPairs(curr_record, set_idx, jaccard_threshold, inv_list, all_sets);
 
         // push current set to glocal set vector
         all_sets.push_back(curr_record);

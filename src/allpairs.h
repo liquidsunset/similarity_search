@@ -8,23 +8,31 @@
 typedef google::dense_hash_map<int, std::vector<int>> inverted_list;
 typedef inverted_list::iterator list_iterator;
 
-inline static unsigned int maxprefix(unsigned int len, double threshold);
+inline static unsigned int maxprefix(unsigned int len, double threshold, unsigned int minsizeprobe);
 inline static unsigned int minoverlap(unsigned int len1, unsigned int len2, double threshold);
+inline static unsigned int maxsize(unsigned int len, double threshold);
+inline static unsigned int minsize(unsigned int len, double threshold);
 
 struct record {
     unsigned int candidate_count = 0;
+    unsigned int maxpref;
     std::vector<int> tokens;
 };
 
-void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshold, inverted_list &inv_list,
+void allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted_list &inv_list,
               std::vector<record> &all_sets) {
 
     std::vector<int> candidate_indexes;
-    //TODO: merken für später
-    unsigned int maxpref = maxprefix(set_vector.size(), jaccard_threshold);
+    std::vector<int> &set_vector = set_record.tokens;
+
+    unsigned int minsizeprobe = minsize(set_vector.size(), jaccard_threshold);
+    unsigned int maxsizeprobe = maxsize(set_vector.size(), jaccard_threshold);
+    unsigned int maxprefprobe = maxprefix(set_vector.size(), jaccard_threshold, minsizeprobe);
+
+    set_record.maxpref = maxprefprobe;
 
     //for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
-    for (unsigned recpos = 0; recpos < maxpref; ++recpos) {
+    for (unsigned recpos = 0; recpos < maxprefprobe; ++recpos) {
 
         int i = set_vector[recpos];
         list_iterator token_id = inv_list.find(i);
@@ -35,7 +43,9 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
             for (auto set = token_id->second.begin(); set != token_id->second.end(); ++set) {
                 record &curr_set = all_sets.at(*set);
                 unsigned int indreclen = curr_set.tokens.size();
-                //TODO: length filter , siehe mitschrift
+                if(! (indreclen >= minsizeprobe && indreclen <= maxsizeprobe)){
+                    break;
+                }
                 if (curr_set.candidate_count == 0) // first check if 0, increment afterwards
                     candidate_indexes.push_back(*set);
                 curr_set.candidate_count++;
@@ -57,12 +67,12 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
     std::cout << "set " << set_idx << " similar to sets: ";
 
     for (auto const &candidate_index : candidate_indexes) {
-        // TODO: use number of common tokens = candidate.second
+
         record &candidate = all_sets.at(candidate_index);
 
-        unsigned int lastposprobe = maxpref;
+        unsigned int lastposprobe = maxprefprobe;
 
-        unsigned int lastposind = maxpref; //TODO: HIer maxpref für candidate set ausrechnen
+        unsigned int lastposind = candidate.maxpref;
         unsigned int recpreftoklast = set_vector[lastposprobe - 1];
         unsigned int indrecpreftoklast = candidate.tokens[lastposind - 1];
 
@@ -96,8 +106,12 @@ inline static unsigned int minsize(unsigned int len, double threshold) {
     return (unsigned int) (ceil(threshold * len));
 }
 
-inline static unsigned int maxprefix(unsigned int len, double threshold) {
-    return std::min(len, len - minsize(len, threshold) + 1);
+inline static unsigned int maxprefix(unsigned int len, double threshold, unsigned int minsizeprobe) {
+    return std::min(len, len - minsizeprobe + 1);
+}
+
+inline static unsigned int maxsize(unsigned int len, double threshold) {
+    return (unsigned int)((len / threshold));
 }
 
 inline static unsigned int minoverlap(unsigned int len1, unsigned int len2, double threshold) {

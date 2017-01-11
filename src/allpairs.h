@@ -20,7 +20,7 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
               std::vector<record> &all_sets) {
 
     std::vector<int> candidate_indexes;
-
+    //TODO: merken für später
     unsigned int maxpref = maxprefix(set_vector.size(), jaccard_threshold);
 
     //for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
@@ -35,9 +35,7 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
             for (auto set = token_id->second.begin(); set != token_id->second.end(); ++set) {
                 record &curr_set = all_sets.at(*set);
                 unsigned int indreclen = curr_set.tokens.size();
-                /*if(indreclen < maxpref) {
-                    break;
-                }*/
+                //TODO: length filter , siehe mitschrift
                 if (curr_set.candidate_count == 0) // first check if 0, increment afterwards
                     candidate_indexes.push_back(*set);
                 curr_set.candidate_count++;
@@ -64,7 +62,7 @@ void allPairs(std::vector<int> &set_vector, int set_idx, double jaccard_threshol
 
         unsigned int lastposprobe = maxpref;
 
-        unsigned int lastposind = maxpref;
+        unsigned int lastposind = maxpref; //TODO: HIer maxpref für candidate set ausrechnen
         unsigned int recpreftoklast = set_vector[lastposprobe - 1];
         unsigned int indrecpreftoklast = candidate.tokens[lastposind - 1];
 

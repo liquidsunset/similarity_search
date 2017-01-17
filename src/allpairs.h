@@ -19,30 +19,34 @@ struct record {
     std::vector<int> tokens;
 };
 
-void allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted_list &inv_list,
+int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted_list &inv_list,
               std::vector<record> &all_sets) {
 
     std::vector<int> candidate_indexes;
     std::vector<int> &set_vector = set_record.tokens;
 
-    unsigned int minsizeprobe = minsize(set_vector.size(), jaccard_threshold);
-    unsigned int maxsizeprobe = maxsize(set_vector.size(), jaccard_threshold);
-    unsigned int maxprefprobe = maxprefix(set_vector.size(), jaccard_threshold, minsizeprobe);
+    unsigned int set_size = set_vector.size();
+
+    int count = 0;
+    unsigned int minsizeprobe = minsize(set_size, jaccard_threshold);
+    unsigned int maxsizeprobe = maxsize(set_size, jaccard_threshold);
+    unsigned int maxprefprobe = maxprefix(set_size, jaccard_threshold, minsizeprobe);
 
     set_record.maxpref = maxprefprobe;
-
     //for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
     for (unsigned recpos = 0; recpos < maxprefprobe; ++recpos) {
 
-        int i = set_vector[recpos];
-        list_iterator token_id = inv_list.find(i);
+        int token = set_vector[recpos];
+        list_iterator token_id = inv_list.find(token);
 
         if (token_id != inv_list.end()) {
 //        std::cout << "found in I: " << token_id.first << std::endl;
             // add set indexes, where token occurs in, to candidate set
             for (auto set = token_id->second.begin(); set != token_id->second.end(); ++set) {
                 record &curr_set = all_sets.at(*set);
+
                 unsigned int indreclen = curr_set.tokens.size();
+
                 if(! (indreclen >= minsizeprobe && indreclen <= maxsizeprobe)){
                     break;
                 }
@@ -53,26 +57,17 @@ void allPairs(record &set_record, int set_idx, double jaccard_threshold, inverte
         }
     }
 
-    //populate inverted list index I
-    for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
-        int token = *i;
-
-        std::vector<int> inverted_list_vector;
-        std::pair<list_iterator, bool> entry = inv_list.insert(std::make_pair(token, inverted_list_vector));
-
-        entry.first->second.push_back(set_idx);
-    }
-
     // VERIFY candidates = run jaccard
     std::cout << "set " << set_idx << " similar to sets: ";
 
     for (auto const &candidate_index : candidate_indexes) {
 
         record &candidate = all_sets.at(candidate_index);
-
+        std::vector<int> &candidate_tokens = candidate.tokens;
+        unsigned int candidate_size = candidate.tokens.size();
         unsigned int lastposprobe = maxprefprobe;
-
         unsigned int lastposind = candidate.maxpref;
+
         unsigned int recpreftoklast = set_vector[lastposprobe - 1];
         unsigned int indrecpreftoklast = candidate.tokens[lastposind - 1];
 
@@ -88,18 +83,30 @@ void allPairs(record &set_record, int set_idx, double jaccard_threshold, inverte
             indrecpos = candidate.candidate_count;
         }
 
-        unsigned int min = minoverlap(set_vector.size(), candidate.tokens.size(), jaccard_threshold);
-
-        bool similar = jaccard(set_vector, candidate.tokens, min, recpos,
+        unsigned int min = minoverlap(set_size, candidate_size, jaccard_threshold);
+        bool similar = jaccard(set_vector, candidate_tokens, min, recpos,
                                indrecpos, candidate.candidate_count);
 
         if (similar) {
             std::cout << candidate_index << " ";
+            count += 1;
         }
 
         candidate.candidate_count = 0;
     }
+
+    //populate inverted list index I
+    for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
+        int token = *i;
+
+        std::vector<int> inverted_list_vector;
+        std::pair<list_iterator, bool> entry = inv_list.insert(std::make_pair(token, inverted_list_vector));
+
+        entry.first->second.push_back(set_idx);
+    }
+
     std::cout << std::endl;
+    return count;
 }
 
 inline static unsigned int minsize(unsigned int len, double threshold) {
@@ -116,7 +123,6 @@ inline static unsigned int maxsize(unsigned int len, double threshold) {
 
 inline static unsigned int minoverlap(unsigned int len1, unsigned int len2, double threshold) {
     return std::min(len2, std::min(len1, (unsigned int) (ceil((len1 + len2) * threshold / (1 + threshold)))));
-    //return (unsigned int)(ceil((len1 + len2) * threshold / (1 + threshold)));
 }
 
 #endif //ALLPAIRS_H

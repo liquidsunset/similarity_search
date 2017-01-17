@@ -29,6 +29,7 @@ int main(int argc, char *argv[]) {
     std::string line;
     int occurrence_count = 0;
     int set_idx = 0;
+    int count = 0;
 
     while (std::getline(infile, line)) {
         std::istringstream line_stream(line);
@@ -51,12 +52,14 @@ int main(int argc, char *argv[]) {
 
         std::sort(tokens_per_line.begin(), tokens_per_line.end());
 
-        allPairs(curr_record, set_idx, jaccard_threshold, inv_list, all_sets);
+        count += allPairs(curr_record, set_idx, jaccard_threshold, inv_list, all_sets);
 
         // push current set to glocal set vector
         all_sets.push_back(curr_record);
-
         set_idx++;
     }
+
+    std::cout << count << std::endl;
+
     return 0;
 }

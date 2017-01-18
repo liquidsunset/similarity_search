@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <chrono>
 #include "allpairs.h"
 #include "tokenizer.h"
 
@@ -18,6 +19,8 @@ int main(int argc, char *argv[]) {
     std::ifstream infile(argv[1]);
     int number_lines = atoi(argv[2]);
     double jaccard_threshold = atof(argv[3]);
+
+    auto start = std::chrono::steady_clock::now();
 
     inv_list.set_empty_key(std::numeric_limits<int>::max());
     token_frequency_map frequency_map = get_token_frequency(infile, number_lines);
@@ -58,6 +61,11 @@ int main(int argc, char *argv[]) {
         all_sets.push_back(curr_record);
         set_idx++;
     }
+
+    auto end = std::chrono::steady_clock::now();
+    double elapsed_seconds = std::chrono::duration_cast<
+            std::chrono::duration<double> >(end - start).count();
+    std::cout << elapsed_seconds << std::endl;
 
     std::cout << count << std::endl;
 

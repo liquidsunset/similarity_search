@@ -34,10 +34,12 @@ int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted
 
     set_record.maxpref = maxprefprobe;
     //for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
-    for (unsigned recpos = 0; recpos < maxprefprobe; ++recpos) {
+    for (unsigned int recpos = 0; recpos < maxprefprobe; ++recpos) {
 
         int token = set_vector[recpos];
         list_iterator token_id = inv_list.find(token);
+        //std::cout << token << std::endl;
+
 
         if (token_id != inv_list.end()) {
 //        std::cout << "found in I: " << token_id.first << std::endl;
@@ -48,8 +50,9 @@ int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted
                 unsigned int indreclen = curr_set.tokens.size();
 
                 if(! (indreclen >= minsizeprobe && indreclen <= maxsizeprobe)){
-                    break;
+                    continue;
                 }
+
                 if (curr_set.candidate_count == 0) // first check if 0, increment afterwards
                     candidate_indexes.push_back(*set);
                 curr_set.candidate_count++;
@@ -58,7 +61,7 @@ int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted
     }
 
     // VERIFY candidates = run jaccard
-    std::cout << "set " << set_idx << " similar to sets: ";
+    //std::cout << "set " << set_idx << " similar to sets: ";
 
     for (auto const &candidate_index : candidate_indexes) {
 
@@ -68,8 +71,8 @@ int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted
         unsigned int lastposprobe = maxprefprobe;
         unsigned int lastposind = candidate.maxpref;
 
-        unsigned int recpreftoklast = set_vector[lastposprobe - 1];
-        unsigned int indrecpreftoklast = candidate.tokens[lastposind - 1];
+        int recpreftoklast = set_vector[lastposprobe - 1];
+        int indrecpreftoklast = candidate.tokens[lastposind - 1];
 
         unsigned int recpos, indrecpos;
 
@@ -88,7 +91,7 @@ int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted
                                indrecpos, candidate.candidate_count);
 
         if (similar) {
-            std::cout << candidate_index << " ";
+            //std::cout << set_idx << ": " <<candidate_index << std::endl;
             count += 1;
         }
 
@@ -96,16 +99,25 @@ int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted
     }
 
     //populate inverted list index I
-    for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
-        int token = *i;
 
+    for(unsigned int i = 0; i < maxprefprobe; i++) {
+        int token = set_vector[i];
         std::vector<int> inverted_list_vector;
         std::pair<list_iterator, bool> entry = inv_list.insert(std::make_pair(token, inverted_list_vector));
 
         entry.first->second.push_back(set_idx);
     }
 
-    std::cout << std::endl;
+    /*for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
+        int token = *i;
+
+        std::vector<int> inverted_list_vector;
+        std::pair<list_iterator, bool> entry = inv_list.insert(std::make_pair(token, inverted_list_vector));
+
+        entry.first->second.push_back(set_idx);
+    }*/
+
+    //std::cout << std::endl;
     return count;
 }
 

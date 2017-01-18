@@ -5,8 +5,12 @@
 #include "allpairs.h"
 #include "tokenizer.h"
 
+#define WRITE
+
 std::vector<record> all_sets;
 inverted_list inv_list;
+
+bool write_to_file(const sim_sets &sim, const std::string &file);
 
 int main(int argc, char *argv[]) {
 
@@ -20,6 +24,8 @@ int main(int argc, char *argv[]) {
     int number_lines = atoi(argv[2]);
     double jaccard_threshold = atof(argv[3]);
 
+    sim_sets similarity_sets;
+
     auto start = std::chrono::steady_clock::now();
 
     inv_list.set_empty_key(std::numeric_limits<int>::max());
@@ -32,7 +38,6 @@ int main(int argc, char *argv[]) {
     std::string line;
     int occurrence_count = 0;
     int set_idx = 0;
-    int count = 0;
 
     while (std::getline(infile, line)) {
         std::istringstream line_stream(line);
@@ -55,7 +60,7 @@ int main(int argc, char *argv[]) {
 
         std::sort(tokens_per_line.begin(), tokens_per_line.end());
 
-        count += allPairs(curr_record, set_idx, jaccard_threshold, inv_list, all_sets);
+        allPairs(curr_record, set_idx, jaccard_threshold, inv_list, all_sets, similarity_sets);
 
         // push current set to glocal set vector
         all_sets.push_back(curr_record);
@@ -65,9 +70,33 @@ int main(int argc, char *argv[]) {
     auto end = std::chrono::steady_clock::now();
     double elapsed_seconds = std::chrono::duration_cast<
             std::chrono::duration<double> >(end - start).count();
+
     std::cout << elapsed_seconds << std::endl;
 
-    std::cout << count << std::endl;
+    std::cout << similarity_sets.size() << std::endl;
 
+#ifdef WRITE
+    write_to_file(similarity_sets, "output.txt");
+#endif
     return 0;
+}
+
+bool write_to_file(const sim_sets &sim, const std::string &file) {
+    if (sim.empty())
+        return false;
+
+    sim_sets::const_iterator i;
+
+    if (file != "") {
+        FILE *out = fopen(file.c_str(), "w");
+        if (!out) {
+            return false;
+        }
+        for (i = sim.begin(); i != sim.end(); ++i) {
+            fprintf(out, "%d %d \n", i->first, i->second);
+        }
+
+        fclose(out);
+    }
+    return true;
 }

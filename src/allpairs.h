@@ -7,6 +7,7 @@
 
 typedef google::dense_hash_map<int, std::vector<int>> inverted_list;
 typedef inverted_list::iterator list_iterator;
+typedef std::vector<std::pair<unsigned int, unsigned int>> sim_sets;
 
 inline static unsigned int maxprefix(unsigned int len, double threshold, unsigned int minsizeprobe);
 
@@ -22,8 +23,8 @@ struct record {
     std::vector<int> tokens;
 };
 
-int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted_list &inv_list,
-             std::vector<record> &all_sets) {
+inline void allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted_list &inv_list,
+                     std::vector<record> &all_sets, sim_sets &similarity_sets) {
 
     std::vector<int> candidate_indexes;
     std::vector<int> &set_vector = set_record.tokens;
@@ -92,7 +93,7 @@ int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted
 
         if (similar) {
             //std::cout << set_idx << ": " <<candidate_index << std::endl;
-            count += 1;
+            similarity_sets.push_back(std::make_pair(set_idx, candidate_index));
         }
 
         candidate.candidate_count = 0;
@@ -108,7 +109,6 @@ int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted
         entry.first->second.push_back(set_idx);
     }
     //std::cout << std::endl;
-    return count;
 }
 
 inline static unsigned int minsize(unsigned int len, double threshold) {

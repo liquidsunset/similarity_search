@@ -9,8 +9,11 @@ typedef google::dense_hash_map<int, std::vector<int>> inverted_list;
 typedef inverted_list::iterator list_iterator;
 
 inline static unsigned int maxprefix(unsigned int len, double threshold, unsigned int minsizeprobe);
+
 inline static unsigned int minoverlap(unsigned int len1, unsigned int len2, double threshold);
+
 inline static unsigned int maxsize(unsigned int len, double threshold);
+
 inline static unsigned int minsize(unsigned int len, double threshold);
 
 struct record {
@@ -20,7 +23,7 @@ struct record {
 };
 
 int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted_list &inv_list,
-              std::vector<record> &all_sets) {
+             std::vector<record> &all_sets) {
 
     std::vector<int> candidate_indexes;
     std::vector<int> &set_vector = set_record.tokens;
@@ -33,23 +36,20 @@ int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted
     unsigned int maxprefprobe = maxprefix(set_size, jaccard_threshold, minsizeprobe);
 
     set_record.maxpref = maxprefprobe;
-    //for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
+
     for (unsigned int recpos = 0; recpos < maxprefprobe; ++recpos) {
 
         int token = set_vector[recpos];
         list_iterator token_id = inv_list.find(token);
-        //std::cout << token << std::endl;
-
 
         if (token_id != inv_list.end()) {
-//        std::cout << "found in I: " << token_id.first << std::endl;
-            // add set indexes, where token occurs in, to candidate set
+
             for (auto set = token_id->second.begin(); set != token_id->second.end(); ++set) {
                 record &curr_set = all_sets.at(*set);
 
                 unsigned int indreclen = curr_set.tokens.size();
 
-                if(! (indreclen >= minsizeprobe && indreclen <= maxsizeprobe)){
+                if (!(indreclen >= minsizeprobe && indreclen <= maxsizeprobe)) {
                     continue;
                 }
 
@@ -100,23 +100,13 @@ int allPairs(record &set_record, int set_idx, double jaccard_threshold, inverted
 
     //populate inverted list index I
 
-    for(unsigned int i = 0; i < maxprefprobe; i++) {
+    for (unsigned int i = 0; i < maxprefprobe; i++) {
         int token = set_vector[i];
         std::vector<int> inverted_list_vector;
         std::pair<list_iterator, bool> entry = inv_list.insert(std::make_pair(token, inverted_list_vector));
 
         entry.first->second.push_back(set_idx);
     }
-
-    /*for (auto i = set_vector.begin(); i != set_vector.end(); ++i) {
-        int token = *i;
-
-        std::vector<int> inverted_list_vector;
-        std::pair<list_iterator, bool> entry = inv_list.insert(std::make_pair(token, inverted_list_vector));
-
-        entry.first->second.push_back(set_idx);
-    }*/
-
     //std::cout << std::endl;
     return count;
 }
@@ -130,7 +120,7 @@ inline static unsigned int maxprefix(unsigned int len, double threshold, unsigne
 }
 
 inline static unsigned int maxsize(unsigned int len, double threshold) {
-    return (unsigned int)((len / threshold));
+    return (unsigned int) ((len / threshold));
 }
 
 inline static unsigned int minoverlap(unsigned int len1, unsigned int len2, double threshold) {

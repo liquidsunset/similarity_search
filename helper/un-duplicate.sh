@@ -7,7 +7,7 @@
 # otherwise the last line will be ignored.
 
 if [ "$#" -ne 2 ]; then
-    echo "Usage: ./un-duplicate.sh <input-file> <output-file>
+    echo "Usage: ./un-duplicate.sh <input-file> <output-file>"
     exit 1;
 fi
 

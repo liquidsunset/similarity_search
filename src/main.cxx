@@ -71,12 +71,17 @@ int main(int argc, char *argv[]) {
     double elapsed_seconds = std::chrono::duration_cast<
             std::chrono::duration<double> >(end - start).count();
 
-    std::cout << elapsed_seconds << std::endl;
+    std::cout << "Time in ms: " << elapsed_seconds << std::endl;
 
-    std::cout << similarity_sets.size() << std::endl;
+    std::cout << "Result pair count: " << similarity_sets.size() << std::endl;
 
 #ifdef WRITE
-    write_to_file(similarity_sets, "output.txt");
+    std::string file_name = "result.txt";
+    if (write_to_file(similarity_sets, file_name)) {
+        std::cout << "Writing to file: " << file_name << " successfull!" << std::endl;
+    } else {
+        std::cout << "Writing to file: " << file_name << " not successfull!" << std::endl;
+    }
 #endif
     return 0;
 }

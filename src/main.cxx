@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
 
     sim_sets similarity_sets;
 
-    auto start = std::chrono::steady_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     inv_list.set_empty_key(std::numeric_limits<int>::max());
     token_frequency_map frequency_map = get_token_frequency(infile, number_lines);
@@ -67,11 +67,11 @@ int main(int argc, char *argv[]) {
         set_idx++;
     }
 
-    auto end = std::chrono::steady_clock::now();
-    double elapsed_seconds = std::chrono::duration_cast<
-            std::chrono::duration<double> >(end - start).count();
+    auto end = std::chrono::high_resolution_clock::now();
+    double elapsed_ms = std::chrono::duration_cast<
+            std::chrono::milliseconds >(end - start).count();
 
-    std::cout << "Time in ms: " << elapsed_seconds << std::endl;
+    std::cout << "Time in ms: " << elapsed_ms << std::endl;
 
     std::cout << "Result pair count: " << similarity_sets.size() << std::endl;
 
